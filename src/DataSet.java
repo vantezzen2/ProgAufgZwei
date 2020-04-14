@@ -16,6 +16,9 @@ public class DataSet implements SensorData {
 
     // Recover DataSet from data string
     public DataSet(String[] data) throws IllegalArgumentException {
+        if (data == null) {
+            throw new IllegalArgumentException("Invalid archive");
+        }
         if (data.length == 0) {
             throw new IllegalArgumentException("DataSet doesn't contain enough columns");
         }
@@ -59,7 +62,7 @@ public class DataSet implements SensorData {
     }
 
     public float get(int index) throws IllegalArgumentException {
-        if (index > size()) {
+        if (index >= size() || index < 0) {
             throw new IllegalArgumentException("Reading doesn't exist");
         }
 
@@ -67,7 +70,7 @@ public class DataSet implements SensorData {
     }
 
     public long getTime(int index) throws IllegalArgumentException {
-        if (index > size()) {
+        if (index >= size() || index < 0) {
             throw new IllegalArgumentException("Reading doesn't exist");
         }
 

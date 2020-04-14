@@ -27,6 +27,12 @@ public class WriteAndReadDataSets implements SetsReaderWriter {
                 throw new FilesystemException("Can't write to file");
             }
         }
+
+        try {
+            os.close();
+        } catch(IOException ex) {
+            throw new FilesystemException("Can't close file socket");
+        }
     }
 
     /**
@@ -48,6 +54,12 @@ public class WriteAndReadDataSets implements SetsReaderWriter {
             data = new String(dis.readAllBytes());
         } catch (IOException ex) {
             throw new FilesystemException("Can't read file");
+        }
+
+        try {
+            is.close();
+        } catch(IOException ex) {
+            throw new FilesystemException("Can't close file socket");
         }
 
         // DataSets are separated by two line breaks
