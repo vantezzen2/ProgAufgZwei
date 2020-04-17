@@ -1,14 +1,20 @@
-import java.io.*;
-import java.util.ArrayList;
+package persistence;
 
-public class WriteAndReadDataSets implements SetsReaderWriter {
+import dataBucket.SensorDataBucket;
+import dataBucket.StorageBucket;
+import sensorData.DataSet;
+import sensorData.SensorData;
+
+import java.io.*;
+
+public class Filesystem implements SensorDataPersistor {
     /**
      * Write a list of data sets to the file
      *
-     * @param data DataSets to write
+     * @param bucket DataSets to write
      * @throws Exception
      */
-    public void writeDataSets(ArrayList<SensorData> data, String filename) throws FilesystemException {
+    public void writeDataSets(SensorDataBucket bucket, String filename) throws FilesystemException {
         // Open file
         OutputStream os;
 
@@ -20,12 +26,10 @@ public class WriteAndReadDataSets implements SetsReaderWriter {
 
         DataOutputStream dos = new DataOutputStream(os);
 
-        for (SensorData set : data) {
-            try {
-                dos.writeBytes(set.toString());
-            } catch (IOException ex) {
-                throw new FilesystemException("Can't write to file");
-            }
+        try {
+            dos.writeBytes(bucket.toString());
+        } catch (IOException ex) {
+            throw new FilesystemException("Can't write to file");
         }
 
         try {
@@ -40,7 +44,7 @@ public class WriteAndReadDataSets implements SetsReaderWriter {
      *
      * @throws Exception
      */
-    public ArrayList<SensorData> readDataSets(String filename) throws FilesystemException {
+    public SensorDataBucket readDataSets(String filename) throws FilesystemException {
         InputStream is = null;
         try {
             is = new FileInputStream(filename);
@@ -62,21 +66,8 @@ public class WriteAndReadDataSets implements SetsReaderWriter {
             throw new FilesystemException("Can't close file socket");
         }
 
-        // DataSets are separated by two line breaks
-        String linebreak = System.lineSeparator();
-        String[] setData = data.split(linebreak + linebreak);
+        SensorDataBucket bucket = new StorageBucket(data);
 
-        ArrayList<SensorData> dataSets = new ArrayList<>();
-
-        for (String set : setData) {
-            try {
-                DataSet newDataSet = new DataSet(set.split(linebreak));
-                dataSets.add(newDataSet);
-            } catch (Exception ex) {
-                System.out.println("Error while parsing data: " + ex);
-            }
-        }
-
-        return dataSets;
+        return bucket;
     }
 }

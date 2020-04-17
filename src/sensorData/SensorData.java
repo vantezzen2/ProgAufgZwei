@@ -1,5 +1,7 @@
+package sensorData;
+
 /**
- * SensorData container, containing all readings from a sensor
+ * sensorData.SensorData container, containing all readings from a sensor
  */
 public interface SensorData {
     /**
@@ -33,8 +35,8 @@ public interface SensorData {
     long getTime(int index) throws IllegalArgumentException;
 
     /**
-     * Get the size of the DataSet (a.k.a. how many readings have been saved)
-     * @return Size of the DataSet
+     * Get the size of the sensorData.DataSet (a.k.a. how many readings have been saved)
+     * @return Size of the sensorData.DataSet
      */
     int size();
 
@@ -50,7 +52,7 @@ public interface SensorData {
     void clear();
 
     /**
-     * Archive data to String. This String can later be used to recover the DataSet instance
+     * Archive data to String. This String can later be used to recover the sensorData.DataSet instance
      * @return Archived data
      */
     String toString();

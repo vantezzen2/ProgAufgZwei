@@ -1,5 +1,9 @@
+package sensorData;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import sensorData.DataSet;
+import sensorData.SensorData;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,7 +40,7 @@ class DataSetTest {
         };
         try {
             SensorData data = new DataSet(archive);
-            fail("DataSet constructor should fail with invalid archive data");
+            fail("sensorData.DataSet constructor should fail with invalid archive data");
         } catch(IllegalArgumentException e) {}
     }
 
@@ -58,7 +62,7 @@ class DataSetTest {
 
         try {
             SensorData data = new DataSet(archive);
-            fail("DataSet constructor should fail with invalid archive data");
+            fail("sensorData.DataSet constructor should fail with invalid archive data");
         } catch(IllegalArgumentException e) {}
     }
 
@@ -69,7 +73,7 @@ class DataSetTest {
 
         try {
             SensorData data = new DataSet(archive);
-            fail("DataSet constructor should fail with invalid archive data");
+            fail("sensorData.DataSet constructor should fail with invalid archive data");
         } catch(IllegalArgumentException e) {}
     }
 

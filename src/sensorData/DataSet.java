@@ -1,3 +1,5 @@
+package sensorData;
+
 /*
  * Generic Data Set
  */
@@ -9,18 +11,18 @@ public class DataSet implements SensorData {
     private ArrayList<Long> timestamps = new ArrayList<>();
     private ArrayList<Float> values = new ArrayList<>();
 
-    // New DataSet without previous data
+    // New sensorData.DataSet without previous data
     public DataSet(String sensorName) {
         this.sensorName = sensorName;
     }
 
-    // Recover DataSet from data string
+    // Recover sensorData.DataSet from data string
     public DataSet(String[] data) throws IllegalArgumentException {
         if (data == null) {
             throw new IllegalArgumentException("Invalid archive");
         }
         if (data.length == 0) {
-            throw new IllegalArgumentException("DataSet doesn't contain enough columns");
+            throw new IllegalArgumentException("sensorData.DataSet doesn't contain enough columns");
         }
 
         this.sensorName = data[0];

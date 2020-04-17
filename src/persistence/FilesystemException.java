@@ -1,3 +1,5 @@
+package persistence;
+
 public class FilesystemException extends Exception {
     public FilesystemException() {
         super();
