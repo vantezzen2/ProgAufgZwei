@@ -1,3 +1,4 @@
+// Template from https://github.com/thsc42/Prog2_2020/blob/master/src/sensorData/SensorDataReceiver.java
 package transmission;
 
 import dataBucket.SensorDataBucket;
