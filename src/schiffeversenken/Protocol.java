@@ -1,110 +1,85 @@
 package schiffeversenken;
 
-import java.io.IOException;
-
 public interface Protocol {
     /**
-     * Verbinde mit einem Server
-     * Erlaubt im Zustand "START".
+     * Verschicke Random-Integer, höherer Wert gibt an, wer anfängt.
      * <p>
-     * Nach erfolgreichem verbinden geht die Zustandmaschine in "SET_SHIPS" über, sonst wird ConnectionException geworfen
+     * Diese Methode ist erlaubt im Zustand "START".
+     * Die Statusmaschine geht danach über in "VERSENKEN_SENDEN" oder "VERSENKEN_EMPFANGEN"
+     * oder zurück in "START", sollten die Werte gleich sein.
      *
-     * @param host Host des Servers
-     * @param port Port des Servers
-     * @throws IOException     Wenn keine Verbindung hergestellt werden kann
-     * @throws StatusException
+     * @param num Zufälliger Integer
+     * @throws StatusException wenn in falschem Status aufgerufen
      */
-    void connect(String host, int port) throws IOException, StatusException;
+    void reihenfolgeWuerfeln(int num) throws StatusException;
 
     /**
-     * Starte den Server und warte auf einen Partner
-     * Erlaubt im Zustand "START"
+     * Sende Koordinate
      * <p>
-     * Nach erfolgreichem verbinden geht die Zustandmaschine in "SET_SHIPS" über
+     * Diese Methode ist erlaubt im Zustand "VERSENKEN_SENDEN".
+     * Die Statusmaschine geht danach über in "BESTAETIGEN_EMPFANGEN".
      *
-     * @param port
-     * @throws IOException
-     * @throws StatusException
+     * @param zeile  Zeile der Koordinate
+     * @param spalte Spalte der Koordinate
+     * @throws StatusException wenn in falschem Status aufgerufen
      */
-    void serve(int port) throws IOException, StatusException;
+    void koordinate_senden(int zeile, int spalte) throws StatusException;
 
     /**
-     * Setze ein Schiff auf das eigene Spielfeld.
-     * Erlaubt im Zustand "SET_SHIPS"
+     * Empfange Koordinate
      * <p>
-     * Die Zustandmaschine kann nach dieser Funktion in "SET_SHIPS", "WAIT_FOR_BEGINNER" übergehen
+     * Diese Methode ist erlaubt im Zustand "VERSENKEN_EMPFANGEN".
+     * Die Statusmaschine geht danach über in "BESTAETIGEN_SENDEN".
      *
-     * @param laenge   Länge des Schiffs
-     * @param zeile    Zeile, in dem das Schiff startet
-     * @param spalte   Spalte, in dem das Schiff startet
-     * @param vertikal Steht das Schiff vertikal (sonst horizontal)
-     * @throws StatusException
-     * @throws IllegalArgumentException Wenn das Schiff an einem ungültigen Ort platziert wurde
+     * @param zeile  Zeile der Koordinate
+     * @param spalte Spalte der Koordinate
+     * @throws StatusException wenn in falschem Status aufgerufen
      */
-    void set_ship(int laenge, int zeile, int spalte, boolean vertikal) throws StatusException, IllegalArgumentException;
+    void koordinate_empfangen(int zeile, int spalte) throws StatusException;
 
     /**
-     * Wähle den Anfangenden zufällig und sende das Ergebnis an den Client
-     * Erlaubt im Zustand "WAIT_FOR_BEGINNER" und nur im Server-Modus
+     * Sende Kapitulation.
      * <p>
-     * Die Zustandmaschine geht nach dieser Funktion in "ACTIVE" oder "PASSIVE" über
+     * Diese Methode ist erlaubt im Zustand "VERSENKEN_SENDEN" oder "VERSENKEN_EMPFANGEN".
+     * Die Statusmaschine geht danach über in "BEENDEN"
      *
-     * @throws StatusException
-     * @throws IOException
+     * @throws StatusException wenn in falschem Status aufgerufen
      */
-    void select_beginner() throws StatusException, IOException;
+    void kapitulation() throws StatusException;
 
     /**
-     * Warte auf die Entscheidung des Servers, wer anfängt
-     * Erlaubt im Zustand "WAIT_FOR_BEGINNER" und nur im Client-Modus
+     * Bestätige eine Koordinate.
      * <p>
-     * Die Zustandmaschine geht nach dieser Funktion in "ACTIVE" oder "PASSIVE" über
+     * Mögliche Stati:
+     * 0 => Treffer
+     * 1 => Verfehlt
+     * 2 => Versenkt
+     * <p>
+     * Diese Methode ist erlaubt im Zustand "BESTAETIGEN_EMPFANGEN".
+     * Die Statusmaschine geht danach über in "VERSENKEN_EMPFANGEN" bei Status 0 oder 1
+     * und bei Status 2, wenn das Spiel nicht verloren wurde, oder geht in "BEENDEN" über bei
+     * Status 2, wenn das Spiel verloren wurde
      *
+     * @param status Status
      * @throws StatusException
-     * @throws IOException
      */
-    void wait_for_descision() throws StatusException, IOException;
+    void bestaetigen_empfangen(int status) throws StatusException;
 
     /**
-     * Schieße auf ein Gegner-Schiff
-     * Erlaubt im Zustand "ACTIVE"
+     * Sende eine Bestätigung.
      * <p>
-     * Die Zustandmaschine geht nach dieser Funktion in "PASSIVE" oder "GAME_END" über
+     * Mögliche Stati:
+     * 0 => Treffer
+     * 1 => Verfehlt
+     * 2 => Versenkt
      * <p>
-     * Diese Funktion meldet das Ergebnis des Schusses zurück:
-     * 0 = Kein Treffer
-     * 1 = Treffer
-     * 2 = Treffer versenkt
+     * Diese Methode ist erlaubt im Zustand "BESTAETIGEN_EMPFANGEN".
+     * Die Statusmaschine geht danach über in "VERSENKEN_EMPFANGEN" bei Status 0 oder 1
+     * und bei Status 2, wenn das Spiel nicht verloren wurde, oder geht in "BEENDEN" über bei
+     * Status 2, wenn das Spiel verloren wurde
      *
-     * @param zeile
-     * @param spalte
-     * @return Ergebnis des Schusses
+     * @param status
      * @throws StatusException
-     * @throws IOException
-     * @throws IllegalArgumentException
      */
-    int shoot(int zeile, int spalte) throws StatusException, IOException, IllegalArgumentException;
-
-    /**
-     * Warte auf den Schuss des Gegners
-     * Erlaubt im Zustand "PASSIVE"
-     * <p>
-     * Die Zustandmaschine geht nach dieser Funktion in "ACTIVE" oder "GAME_END" über
-     *
-     * @throws StatusException
-     * @throws IOException
-     */
-    void receive_shot() throws StatusException, IOException;
-
-    /**
-     * Wähle, ob es zu einem erneuten Spiel kommen soll
-     * Erlaubt in "GAME_END"
-     * <p>
-     * Die Zustandmaschine geht nach dieser Funktion in "NO_REMATCH" oder "START" über
-     *
-     * @param rematch
-     * @throws StatusException
-     * @throws IOException
-     */
-    void choose_to_rematch(boolean rematch) throws StatusException, IOException;
+    void bestaetigen_senden(int status) throws StatusException;
 }
