@@ -1,7 +1,7 @@
 package schiffeversenken.protocolBinding;
 
-import schiffeversenken.SVSender;
 import schiffeversenken.StatusException;
+import schiffeversenken.protocol.SVSender;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

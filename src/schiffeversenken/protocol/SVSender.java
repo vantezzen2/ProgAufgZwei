@@ -1,4 +1,6 @@
-package schiffeversenken;
+package schiffeversenken.protocol;
+
+import schiffeversenken.StatusException;
 
 import java.io.IOException;
 

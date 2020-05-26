@@ -1,4 +1,6 @@
-package schiffeversenken;
+package schiffeversenken.protocol;
+
+import schiffeversenken.StatusException;
 
 public interface SVReceiver {
     /**
