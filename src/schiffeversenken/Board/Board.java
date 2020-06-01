@@ -47,4 +47,24 @@ public class Board {
     public BoardStatus get(int x, int y) {
         return board[x][y];
     }
+
+    /**
+     * Zähle die Nummer von Feldern, die einen bestimmten Status besitzen
+     *
+     * @param status Status, der gezählt werden soll
+     * @return Nummer von Feldern
+     */
+    public int countFieldsWithStatus(BoardStatus status) {
+        int count = 0;
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (this.board[i][j] == status) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
 }

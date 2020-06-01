@@ -1,5 +1,7 @@
 package schiffeversenken;
 
+import schiffeversenken.Board.Board;
+import schiffeversenken.Board.BoardStatus;
 import schiffeversenken.protocol.SVReceiver;
 import schiffeversenken.protocol.SVSender;
 import schiffeversenken.protocol.SVUsage;
@@ -10,6 +12,13 @@ import java.util.Random;
 public class Engine implements SVReceiver, SVUsage {
     public static final int UNDEFINED_DICE = -1;
 
+    /**
+     * Auf dem Spielfeld können insgesamt 30 Felder mit "Schiff" belegt sein.
+     * Diese Kontante dient dazu, um herausfinden zu können, ob der Gegenspieler
+     * verloren hat.
+     */
+    private static final int TOTAL_SHIP_ELEMENTS = 30;
+
     private final SVSender sender;
     private Status status;
 
@@ -17,9 +26,14 @@ public class Engine implements SVReceiver, SVUsage {
 
     private int[] angegriffeneKoordinate;
 
+    private final Board ownBoard;
+    private final Board otherBoard;
+
     public Engine(SVSender sender) {
         this.sender = sender;
         this.status = Status.START;
+        this.ownBoard = new Board();
+        this.otherBoard = new Board();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,9 +81,12 @@ public class Engine implements SVReceiver, SVUsage {
             throw new StatusException();
         }
 
-        // TODO: Wurde das Spiel gewonnen? => BEENDEN
-
-        this.status = Status.VERSENKEN_EMPFANGEN;
+        // Wurde das Spiel gewonnen? => BEENDEN
+        if (this.otherBoard.countFieldsWithStatus(BoardStatus.GETROFFEN) >= TOTAL_SHIP_ELEMENTS) {
+            this.status = Status.BEENDEN;
+        } else {
+            this.status = Status.VERSENKEN_EMPFANGEN;
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
