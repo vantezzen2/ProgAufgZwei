@@ -2,6 +2,8 @@ package schiffeversenken.protocol;
 
 import schiffeversenken.StatusException;
 
+import java.io.IOException;
+
 public interface SVReceiver {
     /**
      * Empfange Random-Integer, höherer Wert gibt an, wer anfängt.
@@ -23,7 +25,7 @@ public interface SVReceiver {
      *
      * @throws StatusException wenn in falschem Status aufgerufen
      */
-    void koordinate_empfangen(int x, int y) throws StatusException;
+    void koordinate_empfangen(int x, int y) throws StatusException, IOException;
 
     /**
      * Empfange Kapitulation.

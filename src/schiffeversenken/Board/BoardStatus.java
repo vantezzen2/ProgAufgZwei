@@ -7,4 +7,6 @@ public enum BoardStatus {
     WASSER,
     SCHIFF,
     GETROFFEN,
+    VERSENKT,
+    VERFEHLT
 }

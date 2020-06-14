@@ -23,6 +23,7 @@ public class Engine implements SVReceiver, SVUsage {
     private Status status;
 
     private int gesendeteZahl = UNDEFINED_DICE;
+    private int empfangeneZahl = UNDEFINED_DICE;
 
     private int[] angegriffeneKoordinate;
 
@@ -41,22 +42,22 @@ public class Engine implements SVReceiver, SVUsage {
     ////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void reihenfolgeWuerfeln_empfangen(int num) throws StatusException {
-        if (this.status != Status.START) {
+        if (this.status != Status.START && this.status != Status.WURFEL_GESENDET) {
             throw new StatusException();
         }
 
+        this.empfangeneZahl = num;
+
         // höhere zahl - aktiv, kleinere -> passiv, gleiche zahl noch einmal.
-        if (num == this.gesendeteZahl) {
-            this.status = Status.START;
-        } else if (num > this.gesendeteZahl) {
-            this.status = Status.VERSENKEN_EMPFANGEN;
+        if (this.status == Status.WURFEL_GESENDET) {
+            this.reihenfolgeEntscheiden();
         } else {
-            this.status = Status.VERSENKEN_SENDEN;
+            this.status = Status.WURFEL_EMPFANGEN;
         }
     }
 
     @Override
-    public void koordinate_empfangen(int x, int y) throws StatusException {
+    public void koordinate_empfangen(int x, int y) throws StatusException, IOException {
         if (this.status != Status.VERSENKEN_EMPFANGEN) {
             throw new StatusException();
         }
@@ -64,6 +65,19 @@ public class Engine implements SVReceiver, SVUsage {
         this.angegriffeneKoordinate = new int[]{x, y};
 
         this.status = Status.BESTAETIGEN_SENDEN;
+
+        BoardStatus koordinate = ownBoard.get(x, y);
+        int status = 0;
+        if (koordinate == BoardStatus.WASSER) {
+            status = 1;
+        } else if (koordinate == BoardStatus.SCHIFF) {
+            ownBoard.set(x, y, BoardStatus.GETROFFEN);
+            status = 0;
+        }
+
+        this.sender.bestaetigen_senden(status);
+
+        this.status = Status.VERSENKEN_SENDEN;
     }
 
     @Override
@@ -81,6 +95,20 @@ public class Engine implements SVReceiver, SVUsage {
             throw new StatusException();
         }
 
+        BoardStatus newStatus;
+        if (status == 0) {
+            newStatus = BoardStatus.GETROFFEN;
+        } else if (status == 1) {
+            newStatus = BoardStatus.VERFEHLT;
+        } else {
+            newStatus = BoardStatus.VERSENKT;
+        }
+        this.otherBoard.set(
+                this.angegriffeneKoordinate[0],
+                this.angegriffeneKoordinate[1],
+                newStatus
+        );
+
         // Wurde das Spiel gewonnen? => BEENDEN
         if (this.otherBoard.countFieldsWithStatus(BoardStatus.GETROFFEN) >= TOTAL_SHIP_ELEMENTS) {
             this.status = Status.BEENDEN;
@@ -94,7 +122,7 @@ public class Engine implements SVReceiver, SVUsage {
     ////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void doDice() throws StatusException, IOException {
-        if (this.status != Status.START) {
+        if (this.status != Status.START && this.status != Status.WURFEL_EMPFANGEN) {
             throw new StatusException();
         }
 
@@ -103,10 +131,39 @@ public class Engine implements SVReceiver, SVUsage {
 
         // sende den Wert über den Sender
         this.sender.reihenfolgeWuerfeln(this.gesendeteZahl);
+
+        if (this.status == Status.WURFEL_EMPFANGEN) {
+            this.reihenfolgeEntscheiden();
+        } else {
+            this.status = Status.WURFEL_GESENDET;
+        }
+    }
+
+    private void reihenfolgeEntscheiden() {
+        if (this.empfangeneZahl == this.gesendeteZahl) {
+            this.status = Status.START;
+        } else if (this.empfangeneZahl > this.gesendeteZahl) {
+            this.status = Status.VERSENKEN_EMPFANGEN;
+        } else {
+            this.status = Status.VERSENKEN_SENDEN;
+        }
+    }
+
+    public void bombe_werfen(int zeile, int spalte) throws StatusException, IOException {
+        this.status = Status.BESTAETIGEN_EMPFANGEN;
+        this.sender.koordinate_senden(zeile, spalte);
     }
 
     @Override
     public boolean isActive() {
         return this.status == Status.VERSENKEN_SENDEN;
+    }
+
+    public Board getOwnBoard() {
+        return ownBoard;
+    }
+
+    public Board getOtherBoard() {
+        return otherBoard;
     }
 }

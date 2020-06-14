@@ -2,6 +2,8 @@ package schiffeversenken;
 
 public enum Status {
     START,
+    WURFEL_EMPFANGEN,
+    WURFEL_GESENDET,
     VERSENKEN_SENDEN,
     BESTAETIGEN_SENDEN,
     VERSENKEN_EMPFANGEN,
