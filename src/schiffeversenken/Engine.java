@@ -151,6 +151,7 @@ public class Engine implements SVReceiver, SVUsage {
 
     public void bombe_werfen(int zeile, int spalte) throws StatusException, IOException {
         this.status = Status.BESTAETIGEN_EMPFANGEN;
+        this.angegriffeneKoordinate = new int[]{zeile, spalte};
         this.sender.koordinate_senden(zeile, spalte);
     }
 
