@@ -67,4 +67,36 @@ public class Board {
 
         return count;
     }
+
+    public String toString() {
+        StringBuilder output = new StringBuilder();
+
+        for (BoardStatus[] row : board) {
+            for (BoardStatus status : row) {
+                String s = "";
+                switch (status) {
+                    case WASSER:
+                        s = "░ ";
+                        break;
+                    case SCHIFF:
+                        s = "█ ";
+                        break;
+                    case VERFEHLT:
+                        s = "- ";
+                        break;
+                    case VERSENKT:
+                        s = "* ";
+                        break;
+                    case GETROFFEN:
+                        s = "💣 ";
+                        break;
+                }
+
+                output.append(s);
+            }
+            output.append("\n");
+        }
+
+        return output.toString();
+    }
 }

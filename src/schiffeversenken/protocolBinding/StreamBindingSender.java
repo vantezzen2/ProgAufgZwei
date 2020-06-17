@@ -5,13 +5,12 @@ import schiffeversenken.protocol.SVSender;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class StreamBindingSender implements SVSender {
     private final DataOutputStream dos;
 
-    public StreamBindingSender(OutputStream os) {
-        this.dos = new DataOutputStream(os);
+    public StreamBindingSender(DataOutputStream os) {
+        this.dos = os;
     }
 
     @Override

@@ -5,7 +5,6 @@ import schiffeversenken.protocol.SVReceiver;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Empfange Kommandos für das Schiffe-Versenken Spiel und leite sie an einen SVReceiver weiter
@@ -14,8 +13,8 @@ public class StreamBindingReceiver extends Thread {
     private final DataInputStream dis;
     private final SVReceiver receiver;
 
-    public StreamBindingReceiver(InputStream is, SVReceiver receiver) {
-        this.dis = new DataInputStream(is);
+    public StreamBindingReceiver(DataInputStream is, SVReceiver receiver) {
+        this.dis = is;
         this.receiver = receiver;
     }
 
@@ -41,28 +40,26 @@ public class StreamBindingReceiver extends Thread {
             try {
                 int command = this.dis.readInt();
 
-                switch (command) {
-                    case StreamBinding.WUERFELN:
-                        this.readWuerfel();
-                        break;
-                    case StreamBinding.KOORDINATE:
-                        this.readKoordinate();
-                        break;
-                    case StreamBinding.KAPITULATION:
-                        this.receiver.kapitulation();
-                        break;
-                    case StreamBinding.BESTAETIGEN:
-                        this.readBestaetigung();
-                    default:
-                        repeat = false;
-                        System.err.println("unknown command code: " + command);
+                if (command == StreamBinding.WUERFELN) {
+                    this.readWuerfel();
+                } else if (command == StreamBinding.KOORDINATE) {
+                    this.readKoordinate();
+                } else if (command == StreamBinding.KAPITULATION) {
+                    this.receiver.kapitulation();
+                } else if (command == StreamBinding.BESTAETIGEN) {
+                    this.readBestaetigung();
+                } else {
+                    System.err.println("unknown command code: " + command + StreamBinding.BESTAETIGEN);
+                    System.out.println(command);
+                    System.out.println(StreamBinding.BESTAETIGEN);
+                    System.out.println(command == StreamBinding.BESTAETIGEN);
                 }
             } catch (IOException e) {
                 System.err.println("IOException: " + e.getLocalizedMessage());
-                repeat = false;
+                //repeat = false;
             } catch (StatusException e) {
                 System.err.println("Status Exception: " + e.getLocalizedMessage());
-                repeat = false;
+                //repeat = false;
             }
 
         }

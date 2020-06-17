@@ -77,7 +77,13 @@ public class Engine implements SVReceiver, SVUsage {
 
         this.sender.bestaetigen_senden(status);
 
-        this.status = Status.VERSENKEN_SENDEN;
+        // Wurde das Spiel verloren?
+        if (this.ownBoard.countFieldsWithStatus(BoardStatus.SCHIFF) == 0) {
+            System.out.println("Du hast verloren");
+            this.status = Status.BEENDEN;
+        } else {
+            this.status = Status.VERSENKEN_SENDEN;
+        }
     }
 
     @Override
@@ -85,6 +91,8 @@ public class Engine implements SVReceiver, SVUsage {
         if (this.status != Status.VERSENKEN_SENDEN && this.status != Status.VERSENKEN_EMPFANGEN) {
             throw new StatusException();
         }
+
+        System.out.println("Gegner hat kapituliert");
 
         this.status = Status.BEENDEN;
     }
@@ -111,6 +119,7 @@ public class Engine implements SVReceiver, SVUsage {
 
         // Wurde das Spiel gewonnen? => BEENDEN
         if (this.otherBoard.countFieldsWithStatus(BoardStatus.GETROFFEN) >= TOTAL_SHIP_ELEMENTS) {
+            System.out.println("Du hast gewonnen");
             this.status = Status.BEENDEN;
         } else {
             this.status = Status.VERSENKEN_EMPFANGEN;
@@ -166,5 +175,9 @@ public class Engine implements SVReceiver, SVUsage {
 
     public Board getOtherBoard() {
         return otherBoard;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 }
