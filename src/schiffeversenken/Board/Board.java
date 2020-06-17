@@ -88,7 +88,7 @@ public class Board {
                         s = "* ";
                         break;
                     case GETROFFEN:
-                        s = "💣 ";
+                        s = "■ ";
                         break;
                 }
 

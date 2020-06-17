@@ -88,7 +88,7 @@ public class Engine implements SVReceiver, SVUsage {
 
     @Override
     public void kapitulation() throws StatusException {
-        if (this.status != Status.VERSENKEN_SENDEN && this.status != Status.VERSENKEN_EMPFANGEN) {
+        if (this.status != Status.VERSENKEN_EMPFANGEN) {
             throw new StatusException();
         }
 
@@ -105,10 +105,13 @@ public class Engine implements SVReceiver, SVUsage {
 
         BoardStatus newStatus;
         if (status == 0) {
+            System.out.println("Getroffen!");
             newStatus = BoardStatus.GETROFFEN;
         } else if (status == 1) {
+            System.out.println("Oh, du hast verfehlt.");
             newStatus = BoardStatus.VERFEHLT;
         } else {
+            System.out.println("Treffer versenkt!");
             newStatus = BoardStatus.VERSENKT;
         }
         this.otherBoard.set(
@@ -162,6 +165,16 @@ public class Engine implements SVReceiver, SVUsage {
         this.status = Status.BESTAETIGEN_EMPFANGEN;
         this.angegriffeneKoordinate = new int[]{zeile, spalte};
         this.sender.koordinate_senden(zeile, spalte);
+    }
+
+    public void sende_kapitulation() throws StatusException, IOException {
+        if (this.status != Status.VERSENKEN_SENDEN) {
+            throw new StatusException();
+        }
+
+        this.sender.kapitulation();
+
+        status = Status.BEENDEN;
     }
 
     @Override

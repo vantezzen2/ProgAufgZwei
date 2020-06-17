@@ -103,6 +103,10 @@ public class SVGUI {
                         bombe(parameters);
                         break;
 
+                    case KAPITULATION:
+                        kapitulation();
+                        break;
+
                     case HELP:
                         this.printUsage();
                         break;
@@ -167,13 +171,13 @@ public class SVGUI {
             b.append(START);
             b.append("\n\tBestätige Schiffe und starte das Spiel");
             b.append("\n");
-            b.append(KAPITULATION);
-            b.append("\n\tKapituliere");
-            b.append("\n");
         }
         if (status == GUIStatus.IM_SPIEL) {
             b.append(BOMBE);
             b.append(" [x] [y]\n\tWerfe eine Bombe");
+            b.append("\n");
+            b.append(KAPITULATION);
+            b.append("\n\tKapituliere");
             b.append("\n");
         }
         b.append(EXIT);
@@ -187,7 +191,7 @@ public class SVGUI {
         os.println(engine.getOtherBoard());
         os.println("--------------------");
         os.println(engine.getOwnBoard());
-        os.println("Legende: Wasser: ░, Schiff: █, Verfehlt: -, Versenkt: *, Getroffen: 💣");
+        os.println("Legende: Wasser: ░, Schiff: █, Verfehlt: -, Versenkt: *, Getroffen: ■");
     }
 
     // ---- Verbindungsaufbau ----
@@ -329,12 +333,15 @@ public class SVGUI {
         }
     }
 
-    private void kapitulation() throws StatusException {
+    private void kapitulation() throws StatusException, IOException {
         if (status != GUIStatus.IM_SPIEL) {
             os.println("Statusfehler: Du kannst zur Zeit nicht kapitulieren");
             return;
         }
 
-        engine.kapitulation();
+        System.out.println("Kapituliere");
+
+        engine.sende_kapitulation();
+        status = GUIStatus.ENDE;
     }
 }

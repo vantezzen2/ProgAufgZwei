@@ -56,7 +56,7 @@ public class StreamBindingReceiver extends Thread {
                 }
             } catch (IOException e) {
                 System.err.println("IOException: " + e.getLocalizedMessage());
-                //repeat = false;
+                repeat = false;
             } catch (StatusException e) {
                 System.err.println("Status Exception: " + e.getLocalizedMessage());
                 //repeat = false;
