@@ -55,7 +55,13 @@ public class StreamBindingReceiver extends Thread {
                     System.out.println(command == StreamBinding.BESTAETIGEN);
                 }
             } catch (IOException e) {
-                System.err.println("IOException: " + e.getLocalizedMessage());
+                if (e.getLocalizedMessage() == null) {
+                    System.err.println("Dein Gegner hat aus Angst die Verbindung beendet.");
+                    System.exit(0);
+                } else {
+                    System.err.println("IOException: " + e.getLocalizedMessage());
+                }
+
                 repeat = false;
             } catch (StatusException e) {
                 System.err.println("Status Exception: " + e.getLocalizedMessage());
