@@ -25,6 +25,8 @@ public class SVGUI {
     public static final String KAPITULATION = "kapitulation";
     public static final String EXIT = "exit";
     public static final String HELP = "help";
+
+    // Interne Variablen
     private final PrintStream os;
     private final BufferedReader userInput;
     private DataConnection connection;
@@ -32,6 +34,7 @@ public class SVGUI {
     private Engine engine;
     private StreamBindingReceiver receiver;
     private GUIStatus status = GUIStatus.NICHT_VERBUNDEN;
+    private final int[] allowedBoats;
 
 
     public SVGUI() {
@@ -46,6 +49,9 @@ public class SVGUI {
         this.os = System.out;
         this.userInput = new BufferedReader(new InputStreamReader(System.in));
 
+        // Wie viele Boote welcher Länge sind erlaubt?
+        allowedBoats = new int[]{0, 0, 4, 3, 2, 1};
+
         this.run();
     }
 
@@ -55,8 +61,13 @@ public class SVGUI {
         while (again) {
             try {
                 // Gebe die aktuellen Boards aus
-                if (status != GUIStatus.NICHT_VERBUNDEN) {
+                if (status == GUIStatus.IM_SPIEL) {
                     printTheBoards();
+                }
+
+                // Gebe die GUI für den Boot-setzen Modus aus
+                if (status == GUIStatus.SETZE_BOOTE) {
+                    printSetBoats();
                 }
 
                 // read user input
@@ -194,6 +205,17 @@ public class SVGUI {
         os.println("Legende: Wasser: ░, Schiff: █, Verfehlt: -, Versenkt: *, Getroffen: ■");
     }
 
+    private void printSetBoats() {
+        os.println(engine.getOwnBoard());
+        os.println("Legende: Wasser: ░, Schiff: █");
+        os.println("Folgende Boote kannst du noch setzen:");
+        for (int i = 1; i < allowedBoats.length; i++) {
+            if (allowedBoats[i] > 0) {
+                os.println("- " + allowedBoats[i] + " " + i + "-er Boot" + (allowedBoats[i] > 1 ? "e" : ""));
+            }
+        }
+    }
+
     // ---- Verbindungsaufbau ----
     private void connect(String[] parameters) throws IOException {
         if (!requireNumParameters(2, parameters)) return;
@@ -254,20 +276,37 @@ public class SVGUI {
     }
 
     // ---- Boote setzen ----
-    private void setzteBoot(String[] parameters) {
+    private void setzteBoot(String[] parameters) throws InterruptedException, IOException, StatusException {
         if (!requireNumParameters(4, parameters)) return;
         if (status != GUIStatus.SETZE_BOOTE) {
             os.println("Statusfehler: Es können zur Zeit keine Boote gesetzt werden");
             return;
         }
 
-        // TODO: Check if boat is allowed
-        // TODO: Check if boat goes over edge
-
         int x = Integer.parseInt(parameters[0]);
         int y = Integer.parseInt(parameters[1]);
         int length = Integer.parseInt(parameters[2]);
         boolean vertikal = !parameters[3].trim().equals("v");
+
+        // Darf ein Boot dieser Länge noch gesetzt werden?
+        if (length > 5) {
+            os.println("Fehler: Das Boot ist zu lang");
+            return;
+        }
+        int allowed = allowedBoats[length];
+        if (allowed <= 0) {
+            os.println("Fehler: Du kannst kein Boot der Länge " + length + " mehr setzen.");
+            return;
+        }
+
+        // Geht Boot über das Brett hinaus?
+        if (
+                (vertikal && (y + length) > 10) ||
+                        (!vertikal && (x + length) > 10)
+        ) {
+            os.println("Fehler: Dein Boot geht über den Rand des Spielbretts hinaus");
+            return;
+        }
 
         // Setzte Boot
         for (int i = 0; i < length; i++) {
@@ -278,6 +317,19 @@ public class SVGUI {
             } else {
                 x++;
             }
+        }
+        allowedBoats[length]--;
+
+        // Kann das Spiel gestartet werden?
+        boolean hasRemainingBoats = false;
+        for (int i = 1; i < allowedBoats.length; i++) {
+            if (allowedBoats[i] > 0) {
+                hasRemainingBoats = true;
+                break;
+            }
+        }
+        if (!hasRemainingBoats) {
+            start();
         }
     }
 
