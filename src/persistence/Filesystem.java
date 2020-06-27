@@ -1,20 +1,17 @@
 package persistence;
 
-import dataBucket.SensorDataBucket;
-import dataBucket.StorageBucket;
-import sensorData.DataSet;
-import sensorData.SensorData;
+import dataBucket.iStorageBucket;
 
 import java.io.*;
 
-public class Filesystem implements SensorDataPersistor {
+public class Filesystem implements iPersistor {
     /**
      * Write a list of data sets to the file
      *
      * @param bucket DataSets to write
      * @throws Exception
      */
-    public void writeDataSets(SensorDataBucket bucket, String filename) throws FilesystemException {
+    public void writeBucket(iStorageBucket bucket, String filename) throws FilesystemException {
         // Open file
         OutputStream os;
 
@@ -44,7 +41,7 @@ public class Filesystem implements SensorDataPersistor {
      *
      * @throws Exception
      */
-    public SensorDataBucket readDataSets(String filename) throws FilesystemException {
+    public iStorageBucket readBucket(String filename, iStorageBucket bucket) throws FilesystemException {
         InputStream is = null;
         try {
             is = new FileInputStream(filename);
@@ -66,7 +63,7 @@ public class Filesystem implements SensorDataPersistor {
             throw new FilesystemException("Can't close file socket");
         }
 
-        SensorDataBucket bucket = new StorageBucket(data);
+        bucket.importArchive(data);
 
         return bucket;
     }

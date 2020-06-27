@@ -1,8 +1,7 @@
 // Template from https://github.com/thsc42/Prog2_2020/blob/master/src/sensorData/SensorDataSender.java
 package transmission;
 
-import dataBucket.SensorDataBucket;
-import persistence.FilesystemException;
+import dataBucket.iStorageBucket;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,7 +13,7 @@ public class BucketSender {
         this.connection = connection;
     }
 
-    public void sendData(SensorDataBucket bucket) throws IOException {
+    public void sendData(iStorageBucket bucket) throws IOException {
         DataOutputStream dostream = this.connection.getDataOutputStream();
 
         String archive = bucket.toString();

@@ -5,7 +5,8 @@ import schiffeversenken.Board.BoardStatus;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class SVTest {
     @Test
@@ -32,9 +33,6 @@ class SVTest {
 
         // Throw bomb
         activeGame.bombe_werfen(0, 0);
-
-        assertFalse(activeGame.isActive());
-        assertTrue(passiveGame.isActive());
 
         assertNotEquals(BoardStatus.WASSER, activeGame.getOtherBoard().get(0, 0));
     }

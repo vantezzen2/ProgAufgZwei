@@ -1,36 +1,32 @@
 /**
- * Storage to save multiple SensorData instances
- *
- * @author vantezzen2
+ * Generic data storage bucket for saving and managing multiple iDataSet instances
  */
 package dataBucket;
 
-import sensorData.SensorData;
-
 import java.util.ArrayList;
 
-public interface SensorDataBucket {
+public interface iStorageBucket<T> {
     /**
-     * Add a new SensorData to the storage
+     * Add a new item to the storage
      *
-     * @param data SensorData to add to the bucket
+     * @param data Item to add to the bucket
      */
-    void add(SensorData data);
+    void add(T data);
 
     /**
-     * Get all stored SensorData instances
+     * Get all stored instances
      *
-     * @return ArrayList of SensorData instances
+     * @return ArrayList of data instances
      */
-    ArrayList<SensorData> getAll();
+    ArrayList<T> getAll();
 
     /**
-     * Get a single SensorData instance
+     * Get a single data instance
      *
      * @param index Index in the ArrayList returned in getAll()
-     * @return SensorData
+     * @return Data
      */
-    SensorData get(int index) throws IllegalArgumentException;
+    T get(int index) throws IllegalArgumentException;
 
     /**
      * Get the number of elements in the bucket

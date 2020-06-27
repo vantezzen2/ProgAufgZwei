@@ -1,19 +1,14 @@
 package dataBucket;
 
-import persistence.FilesystemException;
-import sensorData.DataSet;
-import sensorData.SensorData;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class StorageBucket implements SensorDataBucket {
-    ArrayList<SensorData> data;
+public class IntStorageBucket implements iStorageBucket<Integer> {
+    ArrayList<Integer> data;
 
     /**
      * Create new empty bucket
      */
-    public StorageBucket() {
+    public IntStorageBucket() {
         data = new ArrayList<>();
     }
 
@@ -22,7 +17,7 @@ public class StorageBucket implements SensorDataBucket {
      *
      * @param data ArrayList of SensorData instances
      */
-    public StorageBucket(ArrayList<SensorData> data) {
+    public IntStorageBucket(ArrayList<Integer> data) {
         this.data = data;
     }
 
@@ -31,7 +26,7 @@ public class StorageBucket implements SensorDataBucket {
      *
      * @param bucket Other Bucket instance
      */
-    public StorageBucket(SensorDataBucket bucket) {
+    public IntStorageBucket(iStorageBucket bucket) {
         this.data = bucket.getAll();
     }
 
@@ -40,23 +35,23 @@ public class StorageBucket implements SensorDataBucket {
      *
      * @param archive Archive to use
      */
-    public StorageBucket(String archive) {
+    public IntStorageBucket(String archive) {
         data = new ArrayList<>();
         this.importArchive(archive);
     }
 
     @Override
-    public void add(SensorData data) {
+    public void add(Integer data) {
         this.data.add(data);
     }
 
     @Override
-    public ArrayList<SensorData> getAll() {
+    public ArrayList<Integer> getAll() {
         return data;
     }
 
     @Override
-    public SensorData get(int index) throws IllegalArgumentException {
+    public Integer get(int index) throws IllegalArgumentException {
         if (index >= this.data.size() || index < 0) {
             throw new IllegalArgumentException("Index doesn't exist");
         }
@@ -75,8 +70,7 @@ public class StorageBucket implements SensorDataBucket {
 
         for (String set : setData) {
             try {
-                DataSet newDataSet = new DataSet(set.split(linebreak));
-                data.add(newDataSet);
+                data.add(Integer.parseInt(set));
             } catch (Exception ex) {
                 // Ignore invalid entries
             }
@@ -85,8 +79,8 @@ public class StorageBucket implements SensorDataBucket {
 
     public String toString() {
         StringBuilder output = new StringBuilder();
-        for (SensorData set : data) {
-            output.append(set);
+        for (int set : data) {
+            output.append(set + System.lineSeparator() + System.lineSeparator());
         }
 
         return output.toString();
