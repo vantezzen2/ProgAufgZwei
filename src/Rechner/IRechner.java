@@ -21,7 +21,7 @@ public interface IRechner {
     /**
      * Mache die letzte Statusänderung rückgängig
      */
-    void undo();
+    void undo() throws IllegalAccessException;
 
     /**
      * Setzte den Status zurück auf 0. Dies behält die Statushistorie bei

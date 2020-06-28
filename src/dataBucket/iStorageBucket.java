@@ -43,7 +43,15 @@ public interface iStorageBucket<T> {
     void importArchive(String archive);
 
     /**
+     * Remove an index from the bucket
+     *
+     * @param index Index to remove
+     */
+    void remove(int index) throws IllegalArgumentException;
+
+    /**
      * Convert StorageBucket to string for archiving
+     *
      * @return
      */
     String toString();

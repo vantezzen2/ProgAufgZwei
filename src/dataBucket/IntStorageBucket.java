@@ -77,6 +77,15 @@ public class IntStorageBucket implements iStorageBucket<Integer> {
         }
     }
 
+    @Override
+    public void remove(int index) throws IllegalArgumentException {
+        if (index >= this.data.size() || index < 0) {
+            throw new IllegalArgumentException("Index doesn't exist");
+        }
+
+        data.remove(index);
+    }
+
     public String toString() {
         StringBuilder output = new StringBuilder();
         for (int set : data) {
